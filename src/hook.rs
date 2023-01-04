@@ -111,7 +111,9 @@ unsafe extern "system" fn keyboard(n_code: c_int, w_param: WPARAM, l_param: LPAR
         && !(info.vkCode == VK_LEFT as u32
             || info.vkCode == VK_RIGHT as u32
             || info.vkCode == VK_UP as u32
-            || info.vkCode == VK_DOWN as u32)
+            || info.vkCode == VK_DOWN as u32
+            || info.vkCode == VK_LWIN as u32
+            || info.vkCode == VK_RWIN as u32)
     {
         if let Some(key_list) = KEYS.lock().unwrap().get(&modify_shift_caps(info.vkCode)) {
             let random_char = *(key_list.choose(&mut rand::thread_rng()).unwrap_unchecked());
