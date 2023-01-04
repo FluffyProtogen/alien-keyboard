@@ -56,6 +56,93 @@ pub fn modify_shift_caps(key: u32) -> u32 {
                 }
             }
         }
+        0x30 if shift_pressed() => 0x29,
+        0x31 if shift_pressed() => 0x21,
+        0x32 if shift_pressed() => 0x40,
+        0x33 if shift_pressed() => 0x23,
+        0x34 if shift_pressed() => 0x24,
+        0x35 if shift_pressed() => 0x25,
+        0x36 if shift_pressed() => 0x5e,
+        0x37 if shift_pressed() => 0x26,
+        0x38 if shift_pressed() => 0x2a,
+        0x39 if shift_pressed() => 0x28,
+        0xba => {
+            if shift_pressed() {
+                0x3a
+            } else {
+                0x3b
+            }
+        }
+        0xbd => {
+            if shift_pressed() {
+                0x5f
+            } else {
+                0x2d
+            }
+        }
+        0xbb => {
+            if shift_pressed() {
+                0x2b
+            } else {
+                0x3d
+            }
+        }
+        0xbc => {
+            if shift_pressed() {
+                0x3c
+            } else {
+                0x2c
+            }
+        }
+        0xbe => {
+            if shift_pressed() {
+                0x3e
+            } else {
+                0x2e
+            }
+        }
+        0xbf => {
+            if shift_pressed() {
+                0x3f
+            } else {
+                0x2f
+            }
+        }
+        0xc0 => {
+            if shift_pressed() {
+                0x7e
+            } else {
+                0x60
+            }
+        }
+        0xdb => {
+            if shift_pressed() {
+                0x7b
+            } else {
+                0x5b
+            }
+        }
+        0xdc => {
+            if shift_pressed() {
+                0x7c
+            } else {
+                0x5c
+            }
+        }
+        0xdd => {
+            if shift_pressed() {
+                0x7d
+            } else {
+                0x5d
+            }
+        }
+        0xde => {
+            if shift_pressed() {
+                0x22
+            } else {
+                0x27
+            }
+        }
         _ => key,
     }
 }
@@ -67,55 +154,3 @@ fn caps_pressed() -> bool {
 fn shift_pressed() -> bool {
     unsafe { winapi::um::winuser::GetAsyncKeyState(VK_SHIFT) < 0 }
 }
-
-/*
-match code {
-        VK_LBUTTON => "Left".into(),
-        VK_RBUTTON => "Right".into(),
-        VK_MBUTTON => "Middle".into(),
-        VK_BACK => "Back".into(),
-        VK_TAB => "Tab".into(),
-        VK_CLEAR => "Clear".into(),
-        VK_RETURN => "Enter".into(),
-        VK_LSHIFT => "Left Shift".into(),
-        VK_RSHIFT => "Right Shift".into(),
-        VK_LCONTROL => "Left Control".into(),
-        VK_RCONTROL => "Right Control".into(),
-        VK_LMENU => "Left Alt".into(),
-        VK_RMENU => "Right Alt".into(),
-        VK_CAPITAL => "Caps Lock".into(),
-        VK_ESCAPE => "Escape".into(),
-        VK_SPACE => "Space".into(),
-        VK_PRIOR => "Page Up".into(),
-        VK_NEXT => "Page Down".into(),
-        VK_END => "End".into(),
-        VK_HOME => "Home".into(),
-        VK_LEFT => "Left Arrow".into(),
-        VK_UP => "Up Arrow".into(),
-        VK_RIGHT => "Right Arrow".into(),
-        VK_DOWN => "Down Arrow".into(),
-        VK_SELECT => "Select".into(),
-        VK_PRINT => "Print".into(),
-        VK_EXECUTE => "Execute".into(),
-        VK_SNAPSHOT => "Snapshot".into(),
-        VK_INSERT => "Insert".into(),
-        VK_DELETE => "Delete".into(),
-        VK_HELP => "Help".into(),
-        0x30..=0x39 => (code - 0x30).to_string().into(),
-        0x41..=0x5A => (code as u8 as char).to_string().into(),
-        VK_LWIN => "Left Windows".into(),
-        VK_RWIN => "Right Windows".into(),
-        VK_APPS => "Applications".into(),
-        VK_SLEEP => "Sleep".into(),
-        VK_NUMPAD0..=VK_NUMPAD9 => format!("Number Pad {}", code - VK_NUMPAD0).into(),
-        VK_ADD => "Add".into(),
-        VK_SUBTRACT => "Subtract".into(),
-        VK_MULTIPLY => "Multiply".into(),
-        VK_DIVIDE => "Divide".into(),
-        VK_SEPARATOR => "Separator".into(),
-        VK_DECIMAL => "Decimal".into(),
-        VK_F1..=VK_F24 => format!("F{}", code - VK_F1 + 1).into(),
-        VK_NUMLOCK => "Number Lock".into(),
-        VK_SCROLL => "Scroll".into(),
-        _ => format!("Key Code: {}", code).into(),
-    } */

@@ -1,5 +1,7 @@
 use rand::seq::SliceRandom;
-use std::{mem::*, sync::mpsc::sync_channel, thread, time::SystemTime};
+use std::{
+    hint::unreachable_unchecked, mem::*, sync::mpsc::sync_channel, thread, time::SystemTime,
+};
 use winapi::{
     ctypes::*,
     shared::{minwindef::*, windef::POINT},
@@ -104,14 +106,20 @@ fn send_key(char: char, pressed: bool) {
 unsafe extern "system" fn keyboard(n_code: c_int, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     let info = *transmute::<LPARAM, PKBDLLHOOKSTRUCT>(l_param);
 
-    if info.flags & LLKHF_INJECTED == 0 && !(ctrl_pressed() || alt_pressed()) {
+    if (info.flags & LLKHF_INJECTED == 0 || info.vkCode == 0xbf)
+        && !(ctrl_pressed() || alt_pressed())
+        && !(info.vkCode == VK_LEFT as u32
+            || info.vkCode == VK_RIGHT as u32
+            || info.vkCode == VK_UP as u32
+            || info.vkCode == VK_DOWN as u32)
+    {
         if let Some(key_list) = KEYS.lock().unwrap().get(&modify_shift_caps(info.vkCode)) {
             let random_char = *(key_list.choose(&mut rand::thread_rng()).unwrap_unchecked());
 
             let pressed = match w_param as u32 {
                 WM_KEYDOWN | WM_SYSKEYDOWN => true,
                 WM_KEYUP | WM_SYSKEYUP => false,
-                _ => panic!(),
+                _ => unreachable_unchecked(),
             };
 
             send_key(random_char, pressed);
@@ -132,46 +140,3 @@ fn alt_pressed() -> bool {
 pub fn stop_key_pressed() -> bool {
     unsafe { GetAsyncKeyState(VK_CONTROL) < 0 && GetAsyncKeyState(0x51) < 0 }
 }
-
-/*
-unsafe extern "system" fn keyboard(n_code: c_int, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
-    let info = *transmute::<LPARAM, PKBDLLHOOKSTRUCT>(l_param);
-
-    if info.flags & LLKHF_INJECTED == 0 {
-        if let Some(key_list) = KEYS.lock().unwrap().get(&modify_shift_caps(info.vkCode)) {
-            let random_char = *(key_list.choose(&mut rand::thread_rng()).unwrap_unchecked()) as u32;
-
-            let pressed = match w_param as u32 {
-                WM_KEYDOWN | WM_SYSKEYDOWN => 0,
-                WM_KEYUP | WM_SYSKEYUP => KEYEVENTF_KEYUP,
-                _ => panic!(),
-            };
-
-            let mut keybd_input: INPUT_u = unsafe { std::mem::zeroed() };
-            unsafe {
-                *keybd_input.ki_mut() = KEYBDINPUT {
-                    wVk: 0,
-                    dwExtraInfo: 0,
-                    wScan: random_char,
-                    time: 0,
-                    dwFlags: KEYEVENTF_UNICODE | pressed,
-                };
-            };
-            let mut input = INPUT {
-                type_: INPUT_KEYBOARD,
-                u: keybd_input,
-            };
-
-            unsafe {
-                SendInput(1, &mut input, std::mem::size_of::<INPUT>() as i32);
-            };
-            return -1;
-        }
-    }
-    CallNextHookEx(zeroed(), n_code, w_param, l_param)
-}
-
-pub fn stop_key_pressed() -> bool {
-    unsafe { GetAsyncKeyState(VK_CONTROL) < 0 && GetAsyncKeyState(0x51) < 0 }
-}
- */

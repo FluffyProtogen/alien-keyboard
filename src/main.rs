@@ -10,3 +10,4 @@ fn main() {
 //https://en.wikipedia.org/wiki/Tibetan_(Unicode_block)
 //https://en.wikipedia.org/wiki/Adlam_(Unicode_block)
 //https://en.wikipedia.org/wiki/Vai_(Unicode_block)
+//https://www.compart.com/en/unicode/U+FF3B
