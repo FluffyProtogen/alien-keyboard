@@ -42,17 +42,17 @@ pub fn initialize_keys() {
 pub fn modify_shift_caps(key: u32) -> u32 {
     match key {
         0x41..=0x5A => {
-            if unsafe { RNG_CAPITALIZATION } {
-                if rand::random::<bool>() {
-                    key + 0x20
-                } else {
-                    key
-                }
+            if caps_pressed() || shift_pressed() {
+                key
             } else {
-                if !(caps_pressed() || shift_pressed()) {
-                    key + 0x20
+                if unsafe { RNG_CAPITALIZATION } {
+                    if rand::random::<bool>() {
+                        key + 0x20
+                    } else {
+                        key
+                    }
                 } else {
-                    key
+                    key + 0x20
                 }
             }
         }
