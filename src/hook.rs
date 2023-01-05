@@ -115,7 +115,7 @@ fn ignore_key(code: u32) -> bool {
 unsafe extern "system" fn keyboard(n_code: c_int, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     let info = *transmute::<LPARAM, PKBDLLHOOKSTRUCT>(l_param);
 
-    if (info.flags & LLKHF_INJECTED == 0 || info.vkCode == 0xbf)
+    if info.flags & LLKHF_INJECTED == 0
         && !(ctrl_pressed() || alt_pressed())
         && !ignore_key(info.vkCode)
     {
