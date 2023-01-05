@@ -103,17 +103,21 @@ fn send_key(char: char, pressed: bool) {
     }
 }
 
+fn ignore_key(code: u32) -> bool {
+    match code as i32 {
+        VK_RIGHT | VK_UP | VK_DOWN | VK_LEFT | VK_LWIN | VK_RWIN | VK_DELETE | VK_INSERT
+        | VK_END | VK_HOME => true,
+        winapi::um::winuser::VK_F1..=winapi::um::winuser::VK_F20 => true,
+        _ => false,
+    }
+}
+
 unsafe extern "system" fn keyboard(n_code: c_int, w_param: WPARAM, l_param: LPARAM) -> LRESULT {
     let info = *transmute::<LPARAM, PKBDLLHOOKSTRUCT>(l_param);
 
     if (info.flags & LLKHF_INJECTED == 0 || info.vkCode == 0xbf)
         && !(ctrl_pressed() || alt_pressed())
-        && !(info.vkCode == VK_LEFT as u32
-            || info.vkCode == VK_RIGHT as u32
-            || info.vkCode == VK_UP as u32
-            || info.vkCode == VK_DOWN as u32
-            || info.vkCode == VK_LWIN as u32
-            || info.vkCode == VK_RWIN as u32)
+        && !ignore_key(info.vkCode)
     {
         if let Some(key_list) = KEYS.lock().unwrap().get(&modify_shift_caps(info.vkCode)) {
             let random_char = *(key_list.choose(&mut rand::thread_rng()).unwrap_unchecked());
